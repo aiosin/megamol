@@ -453,7 +453,7 @@ void View3D_2::Render(const mmcRenderViewContext& context) {
                                       !this->bboxs.IsClipBoxValid()))) {
             this->bboxs = cr3d->AccessBoundingBoxes();
             glm::vec3 bbcenter = glm::make_vec3(this->bboxs.BoundingBox().CalcCenter().PeekCoordinates());
-
+            this->ResetView();
             if (this->firstImg) {
                 this->ResetView();
                 this->firstImg = false;
@@ -541,6 +541,7 @@ void View3D_2::ResetView(void) {
     // TODO set distance between eyes
     if (!this->bboxs.IsBoundingBoxValid()) {
         this->bboxs.SetBoundingBox(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f);
+        // this->bboxs.SetClipBox(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f);
     }
     float dist = (0.5f * sqrtf((this->bboxs.BoundingBox().Width() * this->bboxs.BoundingBox().Width()) +
                                (this->bboxs.BoundingBox().Depth() * this->bboxs.BoundingBox().Depth()) +
@@ -924,7 +925,17 @@ bool view::View3D_2::OnMouseScroll(double dx, double dy) {
 
             cam_pos.w() = 0.0f;
 
-            auto v = thecam::math::normalise(rot_cntr - cam_pos);
+			auto sum = rot_cntr - cam_pos;
+			
+            auto v = thecam::math::normalise(sum);
+            // make vector zero
+			//if (sum[0] == 0 && sum[1] == 0 && sum[2] == 0) {
+   //             v[0] = 0.0f;
+   //             v[1] = 0.0f;
+   //             v[2] = 0.0f;
+   //             v[3] = 0.0f;
+			//}
+
 
             auto altitude = thecam::math::length(rot_cntr - cam_pos);
 
@@ -1131,6 +1142,7 @@ std::string View3D_2::determineCameraFilePath(void) const {
  */
 void View3D_2::handleCameraMovement(void) {
     float step = this->viewKeyMoveStepSlot.Param<param::FloatParam>()->Value();
+
     float dt = std::chrono::duration<float>(this->lastFrameDuration).count();
     step *= dt;
 
@@ -1210,6 +1222,14 @@ void View3D_2::handleCameraMovement(void) {
  */
 void View3D_2::setCameraValues(const view::Camera_2& cam) {
     glm::vec4 pos = cam.position();
+    if (isnan(pos.x) || isnan(pos.y) || isnan(pos.z)) {
+        megamol::core::utility::log::Log::DefaultLog.WriteMsg(
+            megamol::core::utility::log::Log::LEVEL_ERROR, "Camera position is nan %f %f %f",pos.x, pos.y, pos.z );
+		
+		this->ResetView();
+		//this->bboxs.
+	}
+
     const bool makeDirty = false;
     this->cameraPositionParam.Param<param::Vector3fParam>()->SetValue(
         vislib::math::Vector<float, 3>(pos.x, pos.y, pos.z), makeDirty);
