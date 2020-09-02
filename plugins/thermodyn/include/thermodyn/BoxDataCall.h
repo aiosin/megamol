@@ -21,6 +21,14 @@ public:
         std::string name_;
 
         float color_[4];
+
+		long index_;
+
+        long size_;
+
+		long lvl_index_;
+
+		long lvl_;
     };
     using box_entry_t = box_entry;
 

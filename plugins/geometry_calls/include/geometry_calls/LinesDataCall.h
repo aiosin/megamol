@@ -295,6 +295,23 @@ namespace geocalls {
                 this->globCol.Set(0, 0, 0, 255);
             }
 
+			void SetSimple(unsigned int cnt, unsigned int *idxdata, float *vertdata, float *coldata) { 
+				
+					this->count = cnt; 
+
+                    this->idxDT = DT_UINT32;
+                    this->idx.dataUInt32= idxdata;
+
+                    this->vrtDT = DT_FLOAT;
+                    this->vrt.dataFloat = vertdata;
+
+                    this->colDT = CDT_FLOAT_RGBA ;
+                    this->col.dataFloat = coldata; 
+
+	                this->globCol.Set(0, 0, 0, 255);
+
+            }
+
             /**
              * Sets the list ID
              *
