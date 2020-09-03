@@ -295,22 +295,6 @@ namespace geocalls {
                 this->globCol.Set(0, 0, 0, 255);
             }
 
-			void SetSimple(unsigned int cnt, unsigned int *idxdata, float *vertdata, float *coldata) { 
-				
-					this->count = cnt; 
-
-                    this->idxDT = DT_UINT32;
-                    this->idx.dataUInt32= idxdata;
-
-                    this->vrtDT = DT_FLOAT;
-                    this->vrt.dataFloat = vertdata;
-
-                    this->colDT = CDT_FLOAT_RGBA ;
-                    this->col.dataFloat = coldata; 
-
-	                this->globCol.Set(0, 0, 0, 255);
-
-            }
 
             /**
              * Sets the list ID
@@ -675,6 +659,15 @@ namespace geocalls {
          */
         void SetData(unsigned int count, const Lines *lines, const float time = 0.0f);
 
+		void SetSimple(unsigned int cnt, float* vertdata, float* coldata) {
+			this->simple_count = cnt;
+            this->simple_vert_store = vertdata;
+            this->simple_col_store = coldata;
+        }
+
+		
+
+
         /**
         * Sets the time the lines are called for.
         *
@@ -705,6 +698,11 @@ namespace geocalls {
          */
         LinesDataCall& operator=(const LinesDataCall& rhs);
 
+        bool simple_flag;
+		/*simple mode*/
+		float* simple_vert_store;
+        float* simple_col_store;
+        unsigned int simple_count;
     private:
 
         /** The call time. */
@@ -713,7 +711,7 @@ namespace geocalls {
         /** Number of curves */
         unsigned int count;
 
-        /** Cubic bézier curves */
+        /** Cubic bï¿½zier curves */
         const Lines *lines;
 
     };

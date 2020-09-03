@@ -91,12 +91,28 @@ bool trisoup::LinesRenderer::Render(core::Call& call) {
     ::glEnable(GL_DEPTH_TEST);
     ::glLineWidth(1.0f);
 
-    megamol::geocalls::LinesDataCall *ldc = this->getDataSlot.CallAs<megamol::geocalls::LinesDataCall>();
+    megamol::geocalls::LinesDataCall* ldc = this->getDataSlot.CallAs<megamol::geocalls::LinesDataCall>();
     if (ldc != nullptr) ldc->SetFrameID(static_cast<int>(cr->Time()), true);
     if ((ldc == NULL) || (!(*ldc)(0))) return false;
 
     bool useColourArray = false;
-    ::glEnableClientState(GL_VERTEX_ARRAY);
+
+
+    float vertarray[6] = {1, 1, 1, 10, 20, 10};
+    float colarray[6] = {192, 192, 192, 255, 0, 255};
+    if (ldc->simple_flag == true) {
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_COLOR_ARRAY);
+        glVertexPointer(3, GL_FLOAT, 0, ldc->simple_vert_store);
+        glColorPointer(3, GL_FLOAT, 0, ldc->simple_col_store);
+        /*glVertexPointer(3, GL_FLOAT, 0, vertarray);
+        glColorPointer(3, GL_FLOAT, 0, colarray);*/
+        glDrawArrays(GL_LINES, 0, ldc->simple_count);
+        auto i = glGetError();
+
+        return true;
+    }
+
 
     for (unsigned int i = 0; i < ldc->Count(); i++) {
         const megamol::geocalls::LinesDataCall::Lines& l = ldc->GetLines()[i];
